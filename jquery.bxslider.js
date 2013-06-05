@@ -25,11 +25,18 @@
 		ticker: false,
 		tickerHover: false,
 		adaptiveHeight: false,
+		animateHeight: false,
 		adaptiveHeightSpeed: 500,
 		touchEnabled: true,
 		swipeThreshold: 50,
 		video: false,
 		useCSS: true,
+
+		//DOM Configuration
+		wrapperClass: 'bx-wrapper'
+		viewportClass: 'bx-viewport'
+		controlsSelector: null,
+		directionSelector: null,
 		
 		// PAGER
 		pager: true,
@@ -232,10 +239,17 @@
 				// if "vertical" mode, always use adaptiveHeight to prevent odd behavior
 				if (slider.settings.mode == 'vertical') slider.settings.adaptiveHeight = true;
 				// set the viewport height
-				slider.viewport.animate({height: getViewportHeight()}, 200, function(){
-					// onSliderLoad callback
+				if slider.setings.animateHeight{
+					slider.viewport.animate({height: getViewportHeight()}, 200, function(){
+						// onSliderLoad callback
+						slider.settings.onSliderLoad(slider.active.index);
+					});
+				}
+				else{
+					slider.viewport.css({height: getViewportHeight()})
 					slider.settings.onSliderLoad(slider.active.index);
-				});
+					console.log(slider)
+				}
 				// if auto is true, start the show
 				if (slider.settings.auto && slider.settings.autoStart) initAuto();
 				// if ticker is true, start the ticker
