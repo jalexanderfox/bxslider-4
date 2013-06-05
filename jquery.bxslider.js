@@ -249,7 +249,6 @@
 				else{
 					slider.viewport.css({height: getViewportHeight()})
 					slider.settings.onSliderLoad(slider.active.index);
-					console.log(slider)
 				}
 				// if auto is true, start the show
 				if (slider.settings.auto && slider.settings.autoStart) initAuto();
@@ -558,11 +557,13 @@
 			slider.controls.prev.bind('click', clickPrevBind);
 			// if nextSlector was supplied, populate it
 			if(slider.settings.nextSelector){
-				$(slider.settings.nextSelector).append(slider.controls.next);
+				$(slider.settings.nextSelector).bind('click', clickNextBind)
+				//$(slider.settings.nextSelector).append(slider.controls.next);
 			}
 			// if prevSlector was supplied, populate it
 			if(slider.settings.prevSelector){
-				$(slider.settings.prevSelector).append(slider.controls.prev);
+				$(slider.settings.prevSelector).bind('click', clickPrevBind)
+				//$(slider.settings.prevSelector).append(slider.controls.prev);
 			}
 			// if no custom selectors were supplied
 			if(!slider.settings.nextSelector && !slider.settings.prevSelector){
