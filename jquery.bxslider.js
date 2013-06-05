@@ -33,8 +33,8 @@
 		useCSS: true,
 
 		//DOM Configuration
-		wrapperClass: 'bx-wrapper'
-		viewportClass: 'bx-viewport'
+		wrapperClass: 'bx-wrapper',
+		viewportClass: 'bx-viewport',
 		controlsSelector: null,
 		directionSelector: null,
 		
@@ -234,12 +234,13 @@
 				slider.loader.remove();
 				// make el visible
 				el.css('overflow', 'visible');
+
 				// set the left / top position of "el"
 				setSlidePosition();
 				// if "vertical" mode, always use adaptiveHeight to prevent odd behavior
 				if (slider.settings.mode == 'vertical') slider.settings.adaptiveHeight = true;
 				// set the viewport height
-				if slider.setings.animateHeight{
+				if (slider.settings.animateHeight){
 					slider.viewport.animate({height: getViewportHeight()}, 200, function(){
 						// onSliderLoad callback
 						slider.settings.onSliderLoad(slider.active.index);
