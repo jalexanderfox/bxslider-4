@@ -6,6 +6,5 @@
         "jquery.bxslider.css"
     ],
     "dependencies":{
-        //"jquery": "1.9"
     }
 }
