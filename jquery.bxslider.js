@@ -71,6 +71,9 @@
 		maxSlides: 1,
 		moveSlides: 0,
 		slideWidth: 0,
+
+		// STUFF WE JUST NEED X-D
+		hardHeight: undefined,
 		
 		// CALLBACKS
 		onSliderLoad: function() {},
@@ -105,6 +108,9 @@
 		 * Initializes namespace settings to be used throughout plugin
 		 */
 		var init = function(){
+			// PP 
+			slider.initialized = true;
+
 			// merge user-supplied options with the defaults
 			slider.settings = $.extend({}, defaults, options);
 			// store the original children
@@ -267,6 +273,11 @@
 		 * Returns the calculated height of the viewport, used to determine either adaptiveHeight or the maxHeight value
 		 */
 		var getViewportHeight = function(){
+			// CUSTOM CODE- PP
+			if (typeof slider.settings.hardHeight !== "undefined") {
+				return slider.settings.hardHeight;
+			}
+
 			var height = 0;
 			// first determine which children (slides) should be used in our height calculation
 			var children = $();
@@ -557,12 +568,12 @@
 			slider.controls.prev.bind('click', clickPrevBind);
 			// if nextSlector was supplied, populate it
 			if(slider.settings.nextSelector){
-				$(slider.settings.nextSelector).bind('click', clickNextBind)
+				$(slider.settings.nextSelector).bind('click', clickNextBind);
 				//$(slider.settings.nextSelector).append(slider.controls.next);
 			}
 			// if prevSlector was supplied, populate it
 			if(slider.settings.prevSelector){
-				$(slider.settings.prevSelector).bind('click', clickPrevBind)
+				$(slider.settings.prevSelector).bind('click', clickPrevBind);
 				//$(slider.settings.prevSelector).append(slider.controls.prev);
 			}
 			// if no custom selectors were supplied
@@ -1137,6 +1148,47 @@
 		el.getSlideCount = function(){
 			return slider.children.length;
 		}
+
+		/**
+		 * Adding this back in ( PP )...
+		 * Destroy the current instance of the slider (revert everything back to original state)
+		 */
+		el.destroySlider = function(){
+			// don't do anything if slider has already been destroyed
+			if(!slider.initialized) return;
+
+			$(window).off("resize", _resizeHandler);
+
+			slider.initialized = false;
+			$('.bx-clone', this).remove();
+			slider.children.each(function() {
+				$(this).data("origStyle") != undefined ? $(this).attr("style", $(this).data("origStyle")) : $(this).removeAttr('style');
+			});
+			$(this).data("origStyle") != undefined ? this.attr("style", $(this).data("origStyle")) : $(this).removeAttr('style');
+			$(this).unwrap().unwrap();
+			if(slider.controls.el) slider.controls.el.remove();
+
+			if(slider.controls.next) {
+				slider.controls.next.remove();
+			}
+			if(slider.controls.prev) {
+				slider.controls.prev.remove();
+			}
+
+			// destroy binds - PP
+			if(slider.settings.nextSelector){
+				$(slider.settings.nextSelector).unbind('click', clickNextBind);
+			}
+			if(slider.settings.prevSelector){
+				$(slider.settings.prevSelector).unbind('click', clickPrevBind);
+			}
+		
+			if(slider.pagerEl) slider.pagerEl.remove();
+			$('.bx-caption', this).remove();
+			if(slider.controls.autoEl) slider.controls.autoEl.remove();
+			clearInterval(slider.interval);
+			if(slider.settings.responsive) $(window).unbind('resize', resizeWindow);
+		}		
 		
 		/**
 		 * Makes slideshow responsive
@@ -1144,7 +1196,9 @@
 		// first get the original window dimens (thanks alot IE)
 		var windowWidth = $(window).width();
 		var windowHeight = $(window).height();
-		$(window).resize(function(){
+
+		// PP - let's define the resize event a better way so we may clean it up later
+		var _resizeHandler = function() {
 			// get the new window dimens (again, thank you IE)
 			var windowWidthNew = $(window).width();
 			var windowHeightNew = $(window).height();
@@ -1172,8 +1226,12 @@
 				// update the slide position
 				if(!slider.settings.ticker) setSlidePosition();
 			}
-		});
-		
+		}
+
+		// remember to clean this up - PP
+		$(window).resize(_resizeHandler);
+
+		// ENTRY POINT - PP
 		init();
 		
 		// returns the current jQuery object
