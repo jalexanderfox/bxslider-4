@@ -149,6 +149,9 @@
 			if(slider.settings.mode == 'vertical') slider.settings.maxSlides = slider.settings.minSlides;
 			// perform all DOM / CSS modifications
 			setup();
+
+			// remember to clean this up - PP
+			$(window).resize(_resizeHandler);			
 		}
 
 		/**
@@ -1188,7 +1191,13 @@
 			if(slider.controls.autoEl) slider.controls.autoEl.remove();
 			clearInterval(slider.interval);
 			if(slider.settings.responsive) $(window).unbind('resize', resizeWindow);
-		}		
+		}	
+
+		el.reloadSlider = function(settings) {
+			if (settings != undefined) options = settings;
+			el.destroySlider();
+			init();
+		}	
 		
 		/**
 		 * Makes slideshow responsive
@@ -1227,9 +1236,6 @@
 				if(!slider.settings.ticker) setSlidePosition();
 			}
 		}
-
-		// remember to clean this up - PP
-		$(window).resize(_resizeHandler);
 
 		// ENTRY POINT - PP
 		init();
