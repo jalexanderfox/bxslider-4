@@ -117,6 +117,7 @@
 			slider.children = el.children(slider.settings.slideSelector);
 			// store active slide information
 			slider.active = { index: slider.settings.startSlide }
+			
 			// store if the slider is in carousel mode (displaying / moving multiple slides)
 			slider.carousel = slider.settings.minSlides > 1 || slider.settings.maxSlides > 1;
 			// calculate the min / max width thresholds based on min / max number of slides
@@ -152,7 +153,12 @@
 
 			// remember to clean this up - PP
 			$(window).resize(_resizeHandler);			
-		}
+		};
+
+		var _getWidthAllSlides = function() {
+			// change arbitrary 2800% to a calculated value all children * slide width
+			return slider.settings.mode == 'horizontal' ? (slider.children.length * getSlideWidth()) + 'px' : 'auto';//'2800%' : 'auto',
+		};
 
 		/**
 		 * Performs all DOM and CSS modifications
@@ -168,7 +174,7 @@
 			// set el to a massive width, to hold any needed slides
 			// also strip any margin and padding from el
 			el.css({
-				width: slider.settings.mode == 'horizontal' ? '2800%' : 'auto',
+				width: _getWidthAllSlides(),
 				height: 0,
 				overflow: 'hidden',
 				position: 'relative',
@@ -1194,7 +1200,10 @@
 		}	
 
 		el.reloadSlider = function(settings) {
-			if (settings != undefined) options = settings;
+			if (settings != undefined) {
+				// PP
+				$.extend(options, settings);
+			}
 			el.destroySlider();
 			init();
 		}	
@@ -1220,6 +1229,8 @@
 				windowHeight = windowHeightNew;
 				// resize all children in ratio to new screen size
 				slider.children.add(el.find('.bx-clone')).width(getSlideWidth());
+				// resize the container to match that of the children
+				el.css({width: _getWidthAllSlides()});
 				// adjust the height
 				slider.viewport.css('height', getViewportHeight());
 				// if active.last was true before the screen resize, we want
